@@ -9,6 +9,7 @@ import UIKit
 import FirebaseAuth
 import FirebaseCore
 import GoogleSignIn
+import FirebaseFirestore
 
 class SignInViewController: UIViewController {
     
@@ -69,12 +70,12 @@ class SignInViewController: UIViewController {
                 return
             }
             
-            guard let user = result?.user, let idToken = user.idToken?.tokenString else {
+            guard let googleUser = result?.user, let idToken = googleUser.idToken?.tokenString else {
                 print ("Error getting token from Google")
                 return
             }
             
-            let credential = GoogleAuthProvider.credential(withIDToken: idToken,accessToken: user.accessToken.tokenString)
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken,accessToken: googleUser.accessToken.tokenString)
             
             Auth.auth().signIn(with: credential) { result, error in
                 guard error == nil else {
@@ -87,6 +88,37 @@ class SignInViewController: UIViewController {
                     
                     return
                 }
+                
+                // Inicio Firestore
+                
+                let userId = result!.user.uid
+                
+                let db = Firestore.firestore()
+                let docRef = db.collection("Users").document(userId)
+                
+                do {
+                    let document = try await docRef.getDocument()
+                    
+                    if !document.exists {
+                        let username = result!.user.email ?? result!.user.phoneNumber ?? "usuario\(userId)"
+                        let firstName = googleUser.profile?.givenName ?? ""
+                        let lastName = googleUser.profile?.familyName ?? ""
+                        let profileImageUrl = googleUser.profile?.imageURL(withDimension: 400)?.absoluteString ?? ""
+                        
+                        
+                        let user = User (id: userId,username: username, firstName: firstName, lastName: lastName, gender: -1, birthday: nil, profileImageUrl: profileImageUrl)
+                        
+                        try db.collection( "Users" ).document( userId ).setData( from: user )
+                    }
+                    
+                }catch {
+                    print ("Error decoding city:\(error)")
+                }
+                
+                
+                
+                // Fin Firestore
+                
                 self.performSegue(withIdentifier: "NavigateToHome", sender: nil)
                 
             }

@@ -7,12 +7,19 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
 
 class SignUpViewController: UIViewController {
     
-    @IBOutlet weak var PasswordTextField: UITextField!
-    @IBOutlet weak var PasswordConfirmTextField: UITextField!
-    @IBOutlet weak var UsernameTextField: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var passwordConfirmTextField: UITextField!
+    @IBOutlet weak var usernameTextField: UITextField!
+    @IBOutlet weak var firstNameTextField: UITextField!
+    @IBOutlet weak var lastNameTextField: UITextField!
+    @IBOutlet weak var genderSegmenteControl: UISegmentedControl!
+    @IBOutlet weak var birthdayPicker: UIDatePicker!
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,9 +29,9 @@ class SignUpViewController: UIViewController {
     
 
     @IBAction func signUp(_ sender: Any) {
-        let username = UsernameTextField.text ?? ""
-        let password = PasswordTextField.text ?? ""
-        let passwordConfirm = PasswordConfirmTextField.text ?? ""
+        let username = usernameTextField.text ?? ""
+        let password = passwordTextField.text ?? ""
+        let passwordConfirm = passwordConfirmTextField.text ?? ""
         
         if password != passwordConfirm {
             let alert = UIAlertController(title: "Sign Up error", message: "Passwords do not match" , preferredStyle: .alert)
@@ -43,6 +50,10 @@ class SignUpViewController: UIViewController {
                 
                 return
             }
+            
+            createUser(withId: authResult!.user.uid)
+            
+            
           let alert = UIAlertController(title: "Sign Up", message:"Account created sucessfully" , preferredStyle: .actionSheet)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {_ in
                 self.navigationController?.popViewController(animated: true)
@@ -62,6 +73,29 @@ class SignUpViewController: UIViewController {
             }))
             self.present(alert, animated: true,completion: nil)
         }
+        
+        
     }
+    
+    func createUser(withId id: String){
+        let username = usernameTextField.text ?? ""
+        let firstName = firstNameTextField.text ?? ""
+        let lastName = lastNameTextField.text ?? ""
+        let birthday = birthdayPicker.date.timeIntervalSince1970
+        let gender = genderSegmenteControl.selectedSegmentIndex
+        
+        let user = User (id: id,username: username, firstName: firstName, lastName: lastName, gender: gender, birthday: birthday, profileImageUrl: nil)
+        
+        let db = Firestore.firestore()
+        
+        do {
+            try db.collection("Users").document(username).setData(from: user)
+            
+        }catch let error {
+            print ("Error writing city to Firestore: \(error)")
+        }
+    }
+    
+    
 
 }
