@@ -23,7 +23,6 @@ class SettingsViewController: UITableViewController {
                 URLSession.shared.dataTask(with: photoURL) { data, _, error in
                     if let data = data, error == nil {
                         DispatchQueue.main.async {
-                            // ✅ Aquí falta asignar la imagen al ImageView
                             self.profileImageView.image = UIImage(data: data)
                             print("Foto cargada correctamente")
                         }

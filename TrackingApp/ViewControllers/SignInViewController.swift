@@ -49,7 +49,7 @@ class SignInViewController: UIViewController {
             }
             
             // Si el login es correcto navega a la pantalla Home.
-            shouldPerformSegue(withIdentifier: "NavigateToHome", sender: nil)
+            self.performSegue(withIdentifier: "NavigateToHome", sender: nil)
         }
         
     }
@@ -77,8 +77,8 @@ class SignInViewController: UIViewController {
             
             let credential = GoogleAuthProvider.credential(withIDToken: idToken,accessToken: googleUser.accessToken.tokenString)
             
-            Auth.auth().signIn(with: credential) { result, error in
-                guard error == nil else {
+            Auth.auth().signIn(with: credential) { [unowned self] result, error in
+                        guard error == nil else {
                     print ("Error signing user: \(error!)")
                     
                     // Muestra un Alert con la descripción del error devuelto por Firebase.
@@ -90,36 +90,38 @@ class SignInViewController: UIViewController {
                 }
                 
                 // Inicio Firestore
-                
-                let userId = result!.user.uid
-                
-                let db = Firestore.firestore()
-                let docRef = db.collection("Users").document(userId)
-                
-                do {
-                    let document = try await docRef.getDocument()
+                Task {
+                    let userId = result!.user.uid
                     
-                    if !document.exists {
-                        let username = result!.user.email ?? result!.user.phoneNumber ?? "usuario\(userId)"
-                        let firstName = googleUser.profile?.givenName ?? ""
-                        let lastName = googleUser.profile?.familyName ?? ""
-                        let profileImageUrl = googleUser.profile?.imageURL(withDimension: 400)?.absoluteString ?? ""
+                    let db = Firestore.firestore()
+                    let docRef = db.collection("Users").document(userId)
+                    
+                    do {
+                        let document = try await docRef.getDocument()
                         
+                        if !document.exists {
+                            let username = result!.user.email ?? result!.user.phoneNumber ?? "usuario\(userId)"
+                            let firstName = googleUser.profile?.givenName ?? ""
+                            let lastName = googleUser.profile?.familyName ?? ""
+                            let profileImageUrl = googleUser.profile?.imageURL(withDimension: 400)?.absoluteString ?? ""
+                            
+                            
+                            let user = User (id: userId,username: username, firstName: firstName, lastName: lastName, gender: -1, birthDate: nil, profileImageUrl: profileImageUrl)
+                            
+                            try db.collection( "Users" ).document( userId ).setData( from: user )
+                        }
                         
-                        let user = User (id: userId,username: username, firstName: firstName, lastName: lastName, gender: -1, birthday: nil, profileImageUrl: profileImageUrl)
-                        
-                        try db.collection( "Users" ).document( userId ).setData( from: user )
+                    }catch {
+                        print ("Error decoding city:\(error)")
                     }
                     
-                }catch {
-                    print ("Error decoding city:\(error)")
+                    
+                    
+                    // Fin Firestore
+                    
+                    self.performSegue(withIdentifier: "NavigateToHome", sender: nil)
                 }
                 
-                
-                
-                // Fin Firestore
-                
-                self.performSegue(withIdentifier: "NavigateToHome", sender: nil)
                 
             }
             

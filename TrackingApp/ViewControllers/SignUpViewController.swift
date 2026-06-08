@@ -81,18 +81,17 @@ class SignUpViewController: UIViewController {
         let username = usernameTextField.text ?? ""
         let firstName = firstNameTextField.text ?? ""
         let lastName = lastNameTextField.text ?? ""
-        let birthday = birthdayPicker.date.timeIntervalSince1970
+        let birthDate = birthdayPicker.date.millisecondsSince1970
         let gender = genderSegmenteControl.selectedSegmentIndex
         
-        let user = User (id: id,username: username, firstName: firstName, lastName: lastName, gender: gender, birthday: birthday, profileImageUrl: nil)
+        let user = User(id: id, username: username, firstName: firstName, lastName: lastName, gender: gender, birthDate: birthDate, profileImageUrl: nil)
         
         let db = Firestore.firestore()
         
         do {
-            try db.collection("Users").document(username).setData(from: user)
-            
-        }catch let error {
-            print ("Error writing city to Firestore: \(error)")
+            try db.collection("Users").document(id).setData(from: user)
+        } catch let error {
+            print("Error writing user to Firestore: \(error)")
         }
     }
     

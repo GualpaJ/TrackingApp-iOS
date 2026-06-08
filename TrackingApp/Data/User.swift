@@ -11,7 +11,7 @@ struct User: Codable, Sendable {
     var firstName: String
     var lastName: String
     var gender: Int
-    var birthday: Int64?
+    var birthDate: Int64?
     var profileImageUrl: String?
     
     func fullName() -> String {
