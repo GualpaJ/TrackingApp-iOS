@@ -1,0 +1,54 @@
+# macOS
+.DS_Store
+
+# Xcode
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+
+# Build generated
+build/
+DerivedData/
+*.ipa
+*.dSYM.zip
+*.app
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# iOS
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+*~.nib
+*.hmap
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+
+# Code Injection
+iOSInjectionProject/
+
+# 🔴 ESPECÍFICO: Firebase y secretos
+GoogleService-Info.plist
+*.plist
+!Info.plist
+!LaunchScreen.storyboard
+
+# Archivos sensibles
+*.pem
+*.p12
+*.mobileprovision
+*.provisionprofile
