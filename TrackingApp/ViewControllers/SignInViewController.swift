@@ -13,9 +13,9 @@ import FirebaseFirestore
 
 class SignInViewController: UIViewController {
     
-    @IBOutlet weak var PasswordTextField: UITextField!
-    @IBOutlet weak var LogoImageView: UIImageView!
-    @IBOutlet weak var UsernameTextField: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var logoImageView: UIImageView!
+    @IBOutlet weak var usernameTextField: UITextField!
     
     
     override func viewDidLoad() {
@@ -26,14 +26,15 @@ class SignInViewController: UIViewController {
             performSegue(withIdentifier: "NavigateToHome", sender: nil)
         }
         
-        LogoImageView.layer.cornerRadius = 20
-        LogoImageView.layer.masksToBounds = true
+        //LogoImageView.layer.cornerRadius = 20
+        //LogoImageView.layer.masksToBounds = true
     }
     
     
     @IBAction func signIn(_ sender: Any) {
-        let username = UsernameTextField.text ?? ""
-        let password = PasswordTextField.text ?? ""
+        let username = usernameTextField.text ?? ""
+        let password = passwordTextField.text ?? ""
+        
         Auth.auth().signIn(withEmail: username, password: password) { [unowned self] authResult, error in
             
             // Si ocurre un error durante el login.
@@ -49,7 +50,7 @@ class SignInViewController: UIViewController {
             }
             
             // Si el login es correcto navega a la pantalla Home.
-            self.performSegue(withIdentifier: "NavigateToHome", sender: nil)
+            performSegue(withIdentifier: "NavigateToHome", sender: nil)
         }
         
     }
@@ -112,16 +113,13 @@ class SignInViewController: UIViewController {
                         }
                         
                     }catch {
-                        print ("Error decoding city:\(error)")
+                        print("Error creating user from Google: \(error)")
                     }
-                    
-                    
-                    
-                    // Fin Firestore
                     
                     self.performSegue(withIdentifier: "NavigateToHome", sender: nil)
                 }
                 
+                // Fin Firestore
                 
             }
             

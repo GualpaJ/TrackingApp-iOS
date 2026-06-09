@@ -86,9 +86,8 @@ class SignUpViewController: UIViewController {
         
         let user = User(id: id, username: username, firstName: firstName, lastName: lastName, gender: gender, birthDate: birthDate, profileImageUrl: nil)
         
-        let db = Firestore.firestore()
-        
         do {
+            let db = Firestore.firestore()
             try db.collection("Users").document(id).setData(from: user)
         } catch let error {
             print("Error writing user to Firestore: \(error)")
